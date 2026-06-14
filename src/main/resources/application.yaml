@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: store
+
+stripe:
+  apiUrl: https://api.stripe.com
+  enabled: true
+  timeout: 1000
+  supported-currencies: USD,PHP,EUR
+
+payment-gateway: stripe
+mail:
+  host: https://smtp.gmail.com
+  port: 465
