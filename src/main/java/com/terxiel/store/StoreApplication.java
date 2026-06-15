@@ -20,7 +20,6 @@ public class StoreApplication {
         );
 
         userService.registerUser(newUser);
-        userService.registerUser(newUser);
     }
 
 }
