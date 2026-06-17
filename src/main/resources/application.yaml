@@ -2,17 +2,6 @@ spring:
   application:
     name: store
   datasource:
-    url: jdbc:mysql://localhost:3306/store?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/store_temp?createDatabaseIfNotExist=true
     username: root
     password: DmaFiel@7221997
-
-stripe:
-  apiUrl: https://api.stripe.com
-  enabled: true
-  timeout: 1000
-  supported-currencies: USD,PHP,EUR
-
-payment-gateway: stripe
-mail:
-  host: https://smtp.gmail.com
-  port: 465
