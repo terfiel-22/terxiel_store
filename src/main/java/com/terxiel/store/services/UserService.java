@@ -1,6 +1,7 @@
 package com.terxiel.store.services;
 
 
+import com.terxiel.store.entities.Profile;
 import com.terxiel.store.entities.User;
 import com.terxiel.store.repositories.AddressRepository;
 import com.terxiel.store.repositories.ProfileRepository;
@@ -9,6 +10,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 
 @Service
@@ -69,5 +72,25 @@ public class UserService {
         var address = addressRepository.findById(1L).orElseThrow(()->new RuntimeException("No address found."));
 
         System.out.println(address);
+    }
+
+    public void persistRelated()
+    {
+        var user = User.builder()
+                .name("Terxiel Kenway")
+                .email("terxiel@gmail.com")
+                .password("admin@123")
+                .build();
+
+        var profile = Profile.builder()
+                .bio("He/Him")
+                .phoneNumber("09384726482")
+                .dateOfBirth(LocalDate.of(2003,10,7))
+                .loyaltyPoints(100)
+                .build();
+
+        user.addProfile(profile);
+
+        userRepository.save(user);
     }
 }

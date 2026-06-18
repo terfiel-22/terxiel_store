@@ -67,7 +67,7 @@ public class User {
         tag.users.remove(this);
     }
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Profile profile;
 
     public void addProfile(Profile profile)
