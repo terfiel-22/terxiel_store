@@ -12,6 +12,6 @@ public class StoreApplication {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(StoreApplication.class, args);
 
         var userService = applicationContext.getBean(UserService.class);
-        userService.showRelatedEntities();
+        userService.fetchAddress();
     }
 }

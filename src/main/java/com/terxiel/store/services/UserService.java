@@ -2,6 +2,7 @@ package com.terxiel.store.services;
 
 
 import com.terxiel.store.entities.User;
+import com.terxiel.store.repositories.AddressRepository;
 import com.terxiel.store.repositories.ProfileRepository;
 import com.terxiel.store.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
+    private final AddressRepository addressRepository;
     private final EntityManager entityManager;
 
 
@@ -60,5 +62,12 @@ public class UserService {
         var profile = profileRepository.findById(10L).orElseThrow(()->new RuntimeException("No profile found."));
 
         System.out.println(profile.getUser().getName());
+    }
+
+    public void fetchAddress()
+    {
+        var address = addressRepository.findById(1L).orElseThrow(()->new RuntimeException("No address found."));
+
+        System.out.println(address);
     }
 }
