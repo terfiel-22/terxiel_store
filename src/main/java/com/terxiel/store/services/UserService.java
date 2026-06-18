@@ -1,6 +1,7 @@
 package com.terxiel.store.services;
 
 
+import com.terxiel.store.entities.Address;
 import com.terxiel.store.entities.Profile;
 import com.terxiel.store.entities.User;
 import com.terxiel.store.repositories.AddressRepository;
@@ -89,8 +90,29 @@ public class UserService {
                 .loyaltyPoints(100)
                 .build();
 
-        user.addProfile(profile);
+        var address = Address.builder()
+                .houseNumber("Blk 24 Lot 1")
+                .streetSubdivision("Harbor Homes")
+                .barangay("Halang")
+                .cityMunicipality("Naic")
+                .province("Cavite")
+                .zipCode("4110")
+                .country("Philippines")
+                .build();
 
+        user.addProfile(profile);
+        user.addAddress(address);
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteRelated()
+    {
+        var user = userRepository.findById(20L).orElseThrow(()->new RuntimeException("User not found"));
+        var address = user.getAddresses().getFirst();
+
+        user.removeAddress(address);
         userRepository.save(user);
     }
 }
