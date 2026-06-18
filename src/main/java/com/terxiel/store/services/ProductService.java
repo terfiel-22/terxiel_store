@@ -58,4 +58,30 @@ public class ProductService {
     {
         productRepository.deleteById(7L);
     }
+
+    public void fetchProductsByName()
+    {
+        productRepository.findProductByName("IPhone17");
+        productRepository.findProductByNameLike("IPhone17");
+        productRepository.findProductByNameNotLike("IPhone17");
+        productRepository.findProductByNameContaining("IPhone17");
+        productRepository.findProductByNameStartingWith("IPhone17");
+        productRepository.findProductByNameEndingWith("IPhone17");
+        productRepository.findProductByNameEndingWithIgnoreCase("IPhone17");
+
+        productRepository.findProductByPrice(BigDecimal.valueOf(50000));
+        productRepository.findProductByPriceGreaterThan(BigDecimal.valueOf(50000));
+        productRepository.findProductByPriceLessThan(BigDecimal.valueOf(50000));
+        productRepository.findProductByPriceBetween(BigDecimal.valueOf(50000),BigDecimal.valueOf(60000));
+
+        productRepository.findProductByDescriptionNull();
+        productRepository.findProductByDescriptionNotNull();
+
+        productRepository.findProductByDescriptionNullAndNameNull();
+
+        productRepository.findProductByNameOrderByPriceDesc("IPhone17");
+
+        productRepository.findTop5ByName("IPhone17");
+        productRepository.findFirst5ByName("IPhone17");
+    }
 }
