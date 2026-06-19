@@ -6,6 +6,7 @@ import com.terxiel.store.entities.Category;
 import com.terxiel.store.entities.Product;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -60,4 +61,7 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
     @Query("select new com.terxiel.store.dtos.ProductSummaryRecord(p.id,p.name) from Product p where p.category = :category")
     List<ProductSummaryRecord> findByCategory(@Param("category") Category category);
+
+    @Procedure("findProductsByPriceRange")
+    List<Product> findProductsByPriceRange(BigDecimal min, BigDecimal max);
 }

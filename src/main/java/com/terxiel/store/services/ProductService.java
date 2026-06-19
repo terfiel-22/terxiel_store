@@ -105,4 +105,10 @@ public class ProductService {
         category.setId((byte)1);
         productRepository.findByCategory(category).forEach(System.out::println);
     }
+
+    @Transactional
+    public void fetchProductsRange()
+    {
+        productRepository.findProductsByPriceRange(BigDecimal.valueOf(10000),BigDecimal.valueOf(70000)).forEach(System.out::println);
+    }
 }

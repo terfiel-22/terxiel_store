@@ -33,7 +33,6 @@ public class Product {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @ToString.Exclude
     private Category category;
 
     public void addCategory(String categoryName)
