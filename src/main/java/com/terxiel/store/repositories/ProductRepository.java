@@ -1,5 +1,8 @@
 package com.terxiel.store.repositories;
 
+import com.terxiel.store.dtos.ProductSummary;
+import com.terxiel.store.dtos.ProductSummaryRecord;
+import com.terxiel.store.entities.Category;
 import com.terxiel.store.entities.Product;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -51,8 +54,10 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     @Query("select count(p) from Product p where p.price between :min and :max")
     long countProducts(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
 
-
     @Modifying
     @Query("UPDATE Product p SET p.price=:new_price WHERE p.category.id = :category_id")
     void updatePriceByCategory(@Param("new_price") BigDecimal newPrice, @Param("category_id") Byte categoryId);
+
+    @Query("select new com.terxiel.store.dtos.ProductSummaryRecord(p.id,p.name) from Product p where p.category = :category")
+    List<ProductSummaryRecord> findByCategory(@Param("category") Category category);
 }

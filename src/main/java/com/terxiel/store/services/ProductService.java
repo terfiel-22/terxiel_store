@@ -1,5 +1,6 @@
 package com.terxiel.store.services;
 
+import com.terxiel.store.entities.Category;
 import com.terxiel.store.entities.Product;
 import com.terxiel.store.repositories.CategoryRepository;
 import com.terxiel.store.repositories.ProductRepository;
@@ -96,5 +97,12 @@ public class ProductService {
     public void updateProductPrices()
     {
         productRepository.updatePriceByCategory(BigDecimal.valueOf(500),(byte) 1);
+    }
+
+    public void fetchProducts()
+    {
+        var category = new Category("Smartphone");
+        category.setId((byte)1);
+        productRepository.findByCategory(category).forEach(System.out::println);
     }
 }
