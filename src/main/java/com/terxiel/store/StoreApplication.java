@@ -1,6 +1,6 @@
 package com.terxiel.store;
 
-import com.terxiel.store.services.ProductService;
+import com.terxiel.store.services.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,7 +11,7 @@ public class StoreApplication {
     static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(StoreApplication.class, args);
 
-        var productService = applicationContext.getBean(ProductService.class);
-        productService.fetchProducts();
+        var userService = applicationContext.getBean(UserService.class);
+        userService.fetchUser();
     }
 }
