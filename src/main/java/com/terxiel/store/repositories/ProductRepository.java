@@ -1,7 +1,10 @@
 package com.terxiel.store.repositories;
 
 import com.terxiel.store.entities.Product;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,4 +38,21 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     // Limit (Top/First)
     List<Product> findTop5ByName(String name);
     List<Product> findFirst5ByName(String name);
+
+    // Find products whose prices are within the given range and sort by name.
+    List<Product> findByPriceBetweenOrderByName(BigDecimal min, BigDecimal max);
+
+    // SQL
+    //@Query(value = "SELECT * FROM products p WHERE p.price BETWEEN :min AND :max ORDER BY p.name", nativeQuery = true)
+    // JPQL
+    @Query("SELECT p FROM Product p JOIN p.category WHERE p.price BETWEEN :min AND :max ORDER BY p.name")
+    List<Product> findProducts(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
+
+    @Query("select count(p) from Product p where p.price between :min and :max")
+    long countProducts(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
+
+
+    @Modifying
+    @Query("UPDATE Product p SET p.price=:new_price WHERE p.category.id = :category_id")
+    void updatePriceByCategory(@Param("new_price") BigDecimal newPrice, @Param("category_id") Byte categoryId);
 }

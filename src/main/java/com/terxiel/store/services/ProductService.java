@@ -4,11 +4,14 @@ import com.terxiel.store.entities.Product;
 import com.terxiel.store.repositories.CategoryRepository;
 import com.terxiel.store.repositories.ProductRepository;
 import com.terxiel.store.repositories.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -61,27 +64,37 @@ public class ProductService {
 
     public void fetchProductsByName()
     {
-        productRepository.findProductByName("IPhone17");
-        productRepository.findProductByNameLike("IPhone17");
-        productRepository.findProductByNameNotLike("IPhone17");
-        productRepository.findProductByNameContaining("IPhone17");
-        productRepository.findProductByNameStartingWith("IPhone17");
-        productRepository.findProductByNameEndingWith("IPhone17");
-        productRepository.findProductByNameEndingWithIgnoreCase("IPhone17");
+//        productRepository.findProductByName("IPhone17");
+//        productRepository.findProductByNameLike("IPhone17");
+//        productRepository.findProductByNameNotLike("IPhone17");
+//        productRepository.findProductByNameContaining("IPhone17");
+//        productRepository.findProductByNameStartingWith("IPhone17");
+//        productRepository.findProductByNameEndingWith("IPhone17");
+//        productRepository.findProductByNameEndingWithIgnoreCase("IPhone17");
+//
+//        productRepository.findProductByPrice(BigDecimal.valueOf(50000));
+//        productRepository.findProductByPriceGreaterThan(BigDecimal.valueOf(50000));
+//        productRepository.findProductByPriceLessThan(BigDecimal.valueOf(50000));
+//        productRepository.findProductByPriceBetween(BigDecimal.valueOf(50000),BigDecimal.valueOf(60000));
+//
+//        productRepository.findProductByDescriptionNull();
+//        productRepository.findProductByDescriptionNotNull();
+//
+//        productRepository.findProductByDescriptionNullAndNameNull();
+//
+//        productRepository.findProductByNameOrderByPriceDesc("IPhone17");
+//
+//        productRepository.findTop5ByName("IPhone17");
+//        productRepository.findFirst5ByName("IPhone17");
 
-        productRepository.findProductByPrice(BigDecimal.valueOf(50000));
-        productRepository.findProductByPriceGreaterThan(BigDecimal.valueOf(50000));
-        productRepository.findProductByPriceLessThan(BigDecimal.valueOf(50000));
-        productRepository.findProductByPriceBetween(BigDecimal.valueOf(50000),BigDecimal.valueOf(60000));
+        productRepository.findProducts(BigDecimal.valueOf(10000),BigDecimal.valueOf(70000)).forEach(System.out::println);
+//        long count = productRepository.countProducts(BigDecimal.valueOf(10000),BigDecimal.valueOf(70000));
+//        System.out.println(count);
+    }
 
-        productRepository.findProductByDescriptionNull();
-        productRepository.findProductByDescriptionNotNull();
-
-        productRepository.findProductByDescriptionNullAndNameNull();
-
-        productRepository.findProductByNameOrderByPriceDesc("IPhone17");
-
-        productRepository.findTop5ByName("IPhone17");
-        productRepository.findFirst5ByName("IPhone17");
+    @Transactional
+    public void updateProductPrices()
+    {
+        productRepository.updatePriceByCategory(BigDecimal.valueOf(500),(byte) 1);
     }
 }
