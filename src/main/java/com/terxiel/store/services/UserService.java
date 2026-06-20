@@ -31,8 +31,8 @@ public class UserService {
         // 1. TRANSIENT STATE
         // The object is created in Java memory. It has no ID and JPA doesn't track it.
         var user = User.builder()
-                .name("Terciel Kenway")
-                .email("terciel@gmail.com")
+                .name("Angelita Kenway")
+                .email("angelita@gmail.com")
                 .password("admin@123")
                 .build();
         if(entityManager.contains(user))
@@ -55,9 +55,9 @@ public class UserService {
         // JPA tracks this modification and automatically issues an SQL UPDATE statement
         // right before the transaction commits (flushes).
         var profile = Profile.builder()
-                .bio("He/Him")
+                .bio("She/Her")
                 .dateOfBirth(LocalDate.of(2003,10,7))
-                .loyaltyPoints(100)
+                .loyaltyPoints(5)
                 .phoneNumber("09384756387")
                 .build();
         var address = Address.builder()
@@ -149,5 +149,12 @@ public class UserService {
             System.out.println(u);
             u.getAddresses().forEach(System.out::println);
         });
+    }
+
+    @Transactional
+    public void fetchProfiles()
+    {
+        var users = userRepository.findUsersByLoyaltyPoints(2);
+        users.forEach(System.out::println);
     }
 }
