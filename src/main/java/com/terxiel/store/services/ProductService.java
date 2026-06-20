@@ -5,10 +5,12 @@ import com.terxiel.store.entities.Product;
 import com.terxiel.store.repositories.CategoryRepository;
 import com.terxiel.store.repositories.ProductRepository;
 import com.terxiel.store.repositories.UserRepository;
+import com.terxiel.store.repositories.specifications.ProductSpec;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -130,6 +132,28 @@ public class ProductService {
     public void fetchProductByCriteria()
     {
         var products = productRepository.findProductsByCriteria("phone", null,null);
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void findProductsBySpecifications(String name, BigDecimal minPrice, BigDecimal maxPrice)
+    {
+        Specification<Product> spec = Specification.unrestricted();
+
+        if(name != null)
+        {
+            spec = spec.and(ProductSpec.hasName(name));
+        }
+        if(minPrice != null)
+        {
+            spec = spec.and(ProductSpec.hasPriceGreaterThanOrEqualTo(minPrice));
+        }
+        if(maxPrice != null)
+        {
+            spec = spec.and(ProductSpec.hasPriceLessThanOrEqualTo(maxPrice));
+        }
+
+        var products = productRepository.findAll(spec);
         products.forEach(System.out::println);
     }
 }

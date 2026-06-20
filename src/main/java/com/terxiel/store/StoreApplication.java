@@ -12,6 +12,6 @@ public class StoreApplication {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(StoreApplication.class, args);
 
         var service = applicationContext.getBean(ProductService.class);
-        service.fetchProductByCriteria();
+        service.findProductsBySpecifications("phone",null,null);
     }
 }
