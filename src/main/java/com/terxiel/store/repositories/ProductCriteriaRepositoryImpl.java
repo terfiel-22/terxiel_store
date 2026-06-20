@@ -1,13 +1,11 @@
 package com.terxiel.store.repositories;
 
+import com.terxiel.store.entities.Category;
 import com.terxiel.store.entities.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -60,6 +58,23 @@ public class ProductCriteriaRepositoryImpl implements ProductCriteriaRepository 
         // This sends the SQL to the database.
         // The database returns matching rows.
         // JPA converts each row into a Product object.
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Product> findProductsByCategory(String categoryName) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Product> cq = cb.createQuery(Product.class);
+        Root<Product> root = cq.from(Product.class);
+
+        // Join the Product entity with its Category field
+        // Replace "category" with the exact field name defined in your Product class
+        Join<Product, Category> categoryJoin = root.join("category");
+
+        Predicate predicate = cb.equal(categoryJoin.get("name"), categoryName);
+        cq.select(root).where(predicate);
+
+        TypedQuery<Product> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
 }

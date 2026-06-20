@@ -135,7 +135,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void findProductsBySpecifications(String name, BigDecimal minPrice, BigDecimal maxPrice)
+    public void findProductsBySpecifications(String name, BigDecimal minPrice, BigDecimal maxPrice, String categoryName)
     {
         Specification<Product> spec = Specification.unrestricted();
 
@@ -150,6 +150,10 @@ public class ProductService {
         if(maxPrice != null)
         {
             spec = spec.and(ProductSpec.hasPriceLessThanOrEqualTo(maxPrice));
+        }
+        if(categoryName != null)
+        {
+            spec = spec.and(ProductSpec.hasCategoryEqualTo(categoryName));
         }
 
         var products = productRepository.findAll(spec);
@@ -179,5 +183,13 @@ public class ProductService {
         var totalElements = page.getTotalElements();
         System.out.println("Total Pages: "+totalPages);
         System.out.println("Total Elements: "+totalElements);
+    }
+
+    @Transactional
+    public void findProductsByCategory()
+    {
+        String category = "Smartphone";
+        var products = productRepository.findProductsByCategory(category);
+        products.forEach(System.out::println);
     }
 }
