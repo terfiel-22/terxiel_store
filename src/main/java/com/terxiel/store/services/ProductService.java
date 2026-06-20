@@ -129,7 +129,7 @@ public class ProductService {
     @Transactional
     public void fetchProductByCriteria()
     {
-        var products = productRepository.findProductsByCriteria(null, BigDecimal.valueOf(30000),BigDecimal.valueOf(45000));
+        var products = productRepository.findProductsByCriteria("phone", null,null);
         products.forEach(System.out::println);
     }
 }
