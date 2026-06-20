@@ -5,14 +5,13 @@ import com.terxiel.store.entities.Product;
 import com.terxiel.store.repositories.CategoryRepository;
 import com.terxiel.store.repositories.ProductRepository;
 import com.terxiel.store.repositories.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -109,6 +108,28 @@ public class ProductService {
     @Transactional
     public void fetchProductsRange()
     {
-        productRepository.findProductsByPriceRange(BigDecimal.valueOf(10000),BigDecimal.valueOf(70000)).forEach(System.out::println);
+        productRepository.findProductsByPrice(BigDecimal.valueOf(10000),BigDecimal.valueOf(70000)).forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchProductsLike()
+    {
+        var product = new Product();
+        product.setName("phone"); // name should contain "phone" keyword
+
+        // Example matcher
+        var matcher = ExampleMatcher.matching()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        var example = Example.of(product,matcher);
+        var products = productRepository.findAll(example);
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchProductByCriteria()
+    {
+        var products = productRepository.findProductsByCriteria(null, BigDecimal.valueOf(30000),BigDecimal.valueOf(45000));
+        products.forEach(System.out::println);
     }
 }
