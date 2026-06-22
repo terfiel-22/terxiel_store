@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,6 +8,7 @@
     <title>Terxiel Store</title>
 </head>
 <body>
-    <h1>Hello, SpringBoot!</h1>
+    <h1 th:text="${'Hello, '+ name +'!'}"></h1>
+    <a href="/">Home</a>
 </body>
 </html>
