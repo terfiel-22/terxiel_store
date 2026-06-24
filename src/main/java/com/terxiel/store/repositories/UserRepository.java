@@ -22,7 +22,9 @@ public interface UserRepository extends CrudRepository<User,Long> {
     @Query("SELECT u.id, u.email FROM User u WHERE u.profile.loyaltyPoints > :loyaltyPoints ORDER BY u.email")
     List<UserSummary> findUsersByLoyaltyPoints(@Param("loyaltyPoints") int loyaltyPoints);
 
-    @EntityGraph(attributePaths = "profile")
     @Query("SELECT u FROM User u")
     List<UserSummary> findAllUsers();
+
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<UserSummary> findUserById(@Param("id")Long id);
 }
