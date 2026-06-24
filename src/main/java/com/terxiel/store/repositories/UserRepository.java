@@ -26,5 +26,5 @@ public interface UserRepository extends CrudRepository<User,Long> {
     List<UserSummary> findAllUsers();
 
     @Query("SELECT u FROM User u WHERE u.id = :id")
-    Optional<UserSummary> findUserById(@Param("id")Long id);
+    UserSummary findUserById(@Param("id")Long id);
 }

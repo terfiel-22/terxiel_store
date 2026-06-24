@@ -3,12 +3,11 @@ package com.terxiel.store.controllers;
 import com.terxiel.store.dtos.UserSummary;
 import com.terxiel.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -23,8 +22,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<UserSummary> getUser(@PathVariable Long id)
+    public ResponseEntity<UserSummary> getUser(@PathVariable Long id)
     {
-        return userRepository.findUserById(id);
+        var user = userRepository.findUserById(id);
+        if(user==null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(user);
     }
 }
