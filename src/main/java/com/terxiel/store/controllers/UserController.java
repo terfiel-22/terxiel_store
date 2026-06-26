@@ -1,5 +1,6 @@
 package com.terxiel.store.controllers;
 
+import com.terxiel.store.dtos.UserDTO;
 import com.terxiel.store.dtos.UserSummary;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
@@ -41,5 +42,11 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO)
+    {
+        return ResponseEntity.ok(userDTO);
     }
 }
