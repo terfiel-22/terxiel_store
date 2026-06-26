@@ -19,14 +19,17 @@ public class UserController {
 
     @GetMapping
     public Iterable<UserSummary> getUsers(
+            @RequestHeader(required = false, name = "x-auth-token")
+            String authToken,
             @RequestParam(required = false, defaultValue = "", name = "sort")
             String sort
     )
     {
+        System.out.println(authToken);
         if(!Set.of("name","email").contains(sort))
             sort = "name";
 
-        return userRepository.findAll(Sort.by(sort)).stream().map(userMapper::toDto).toList();
+        return userRepository.findAllUsers(Sort.by(sort)).stream().map(userMapper::toDto).toList();
     }
 
     @GetMapping("/{id}")
