@@ -1,13 +1,15 @@
 package com.terxiel.store.controllers;
 
-import com.terxiel.store.dtos.UserDTO;
+import com.terxiel.store.dtos.RegisterUserRequest;
 import com.terxiel.store.dtos.UserSummary;
+import com.terxiel.store.entities.User;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Set;
 
@@ -45,8 +47,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO)
+    public ResponseEntity<UserSummary> createUser(
+            @RequestBody RegisterUserRequest registerUserRequest,
+            UriComponentsBuilder uriComponentsBuilder
+    )
     {
-        return ResponseEntity.ok(userDTO);
+        var user = userMapper.toEntity(registerUserRequest);
+
+        userRepository.save(user);
+
+        var userSummary = userMapper.toDto(user);
+        var uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(userSummary.id()).toUri();
+
+        return ResponseEntity.created(uri).body(userSummary);
     }
 }
