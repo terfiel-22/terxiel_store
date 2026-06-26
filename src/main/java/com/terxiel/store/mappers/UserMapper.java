@@ -1,10 +1,12 @@
 package com.terxiel.store.mappers;
 
 import com.terxiel.store.dtos.RegisterUserRequest;
+import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
 import com.terxiel.store.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -12,4 +14,6 @@ public interface UserMapper {
     UserSummary toDto(User user);
 
     User toEntity(RegisterUserRequest registerUserRequest);
+
+    void update(UpdateUserRequest updateUserRequest, @MappingTarget User user);
 }

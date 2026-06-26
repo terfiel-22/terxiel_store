@@ -1,6 +1,7 @@
 package com.terxiel.store.controllers;
 
 import com.terxiel.store.dtos.RegisterUserRequest;
+import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
 import com.terxiel.store.entities.User;
 import com.terxiel.store.mappers.UserMapper;
@@ -60,5 +61,24 @@ public class UserController {
         var uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(userSummary.id()).toUri();
 
         return ResponseEntity.created(uri).body(userSummary);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserSummary> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequest updateUserRequest
+    )
+    {
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        userMapper.update(updateUserRequest,user);
+        userRepository.save(user);
+
+        var userSummary = userMapper.toDto(user);
+        return ResponseEntity.ok(userSummary);
     }
 }
