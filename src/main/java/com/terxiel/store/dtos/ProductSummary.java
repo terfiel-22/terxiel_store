@@ -1,6 +1,12 @@
 package com.terxiel.store.dtos;
 
-public interface ProductSummary {
-    Long getId();
-    String getName();
+import java.math.BigDecimal;
+
+public record ProductSummary (
+        Long id,
+        String name,
+        BigDecimal price,
+        String description,
+        String category
+){
 }
