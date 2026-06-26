@@ -3,7 +3,6 @@ package com.terxiel.store.controllers;
 import com.terxiel.store.dtos.RegisterUserRequest;
 import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
-import com.terxiel.store.entities.User;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -80,5 +79,20 @@ public class UserController {
 
         var userSummary = userMapper.toDto(user);
         return ResponseEntity.ok(userSummary);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long id
+    )
+    {
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.delete(user);
+
+        return ResponseEntity.noContent().build();
     }
 }
