@@ -1,5 +1,6 @@
 package com.terxiel.store.controllers;
 
+import com.terxiel.store.dtos.ChangePasswordRequest;
 import com.terxiel.store.dtos.RegisterUserRequest;
 import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
@@ -7,10 +8,12 @@ import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -92,6 +95,29 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         userRepository.delete(user);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @RequestBody ChangePasswordRequest changePasswordRequest
+            )
+    {
+        var user = userRepository.findById(id).orElse(null);
+        if(user == null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        if(!user.getPassword().equals(changePasswordRequest.oldPassword()))
+        {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        user.setPassword(changePasswordRequest.newPassword());
+        userRepository.save(user);
 
         return ResponseEntity.noContent().build();
     }
