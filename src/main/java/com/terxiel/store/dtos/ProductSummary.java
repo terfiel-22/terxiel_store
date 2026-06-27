@@ -7,6 +7,6 @@ public record ProductSummary (
         String name,
         BigDecimal price,
         String description,
-        String category
+        Byte categoryId
 ){
 }
