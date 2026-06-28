@@ -1,6 +1,8 @@
 spring:
   application:
     name: store
+  profiles:
+    active: dev
   datasource:
     url: jdbc:mysql://localhost:3306/store?createDatabaseIfNotExist=true
     username: root
