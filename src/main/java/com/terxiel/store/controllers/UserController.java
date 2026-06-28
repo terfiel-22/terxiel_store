@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -50,11 +51,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserSummary> createUser(
+    public ResponseEntity<?> createUser(
             @Valid @RequestBody RegisterUserRequest registerUserRequest,
             UriComponentsBuilder uriComponentsBuilder
     )
     {
+        if(userRepository.existsByEmail(registerUserRequest.email()))
+        {
+            return ResponseEntity.unprocessableContent().body(Map.of("email","Email is already registered."));
+        }
+
         var user = userMapper.toEntity(registerUserRequest);
 
         userRepository.save(user);

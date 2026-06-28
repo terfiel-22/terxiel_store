@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @EntityGraph(attributePaths = "profile")
     @Query("SELECT u FROM User u")
     List<User> findAllUsers(Sort sort);
+
+    boolean existsByEmail(String email);
 }
