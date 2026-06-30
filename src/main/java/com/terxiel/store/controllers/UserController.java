@@ -6,6 +6,8 @@ import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -17,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Map;
 import java.util.Set;
 
+@Tag(name = "Users", description = "REST API for managing users.")
 @RestController
 @AllArgsConstructor
 @RequestMapping("users")
@@ -24,6 +27,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Operation(summary = "Endpoint for fetching users")
     @GetMapping
     public Iterable<UserSummary> getUsers(
             @RequestHeader(required = false, name = "x-auth-token")
