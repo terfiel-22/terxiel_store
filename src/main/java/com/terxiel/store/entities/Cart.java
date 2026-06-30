@@ -6,10 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -69,5 +66,10 @@ public class Cart {
             getCartItems().remove(cartItem);
             cartItem.setCart(null);
         }
+    }
+
+    public void clear()
+    {
+        cartItems.clear();
     }
 }
