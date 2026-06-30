@@ -43,7 +43,6 @@ public class Cart {
     public CartItem addCartItem(Product product)
     {
         var cartItem = getCartItemByProductId(product.getId());
-
         if(cartItem != null)
         {
             cartItem.setQuantity(cartItem.getQuantity() + 1);
