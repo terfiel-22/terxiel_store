@@ -5,7 +5,6 @@ import com.terxiel.store.dtos.CartDTO;
 import com.terxiel.store.dtos.CartItemDTO;
 import com.terxiel.store.dtos.UpdateCartItemRequest;
 import com.terxiel.store.entities.Cart;
-import com.terxiel.store.entities.CartItem;
 import com.terxiel.store.mappers.CartMapper;
 import com.terxiel.store.repositories.CartRepository;
 import com.terxiel.store.repositories.ProductRepository;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -59,22 +57,7 @@ class CartController {
             return ResponseEntity.unprocessableContent().build();
         }
 
-        var cartItem = cart.getCartItems().stream()
-                .filter(
-                        item-> Objects.equals(item.getProduct().getId(), request.productId())
-                ).findFirst()
-                .orElse(null);
-
-        if(cartItem != null)
-        {
-            cartItem.setQuantity(cartItem.getQuantity() + 1);
-        } else {
-            cartItem = new CartItem();
-            cartItem.setProduct(product);
-            cartItem.setQuantity(1);
-            cartItem.setCart(cart);
-            cart.getCartItems().add(cartItem);
-        }
+        var cartItem = cart.addCartItem(product);
 
         cartRepository.save(cart);
         var cartItemDTO = cartMapper.toDto(cartItem);
@@ -111,11 +94,7 @@ class CartController {
             );
         }
 
-        var cartItem = cart.getCartItems().stream()
-                .filter(
-                        item-> Objects.equals(item.getProduct().getId(), productId)
-                ).findFirst()
-                .orElse(null);
+        var cartItem = cart.getCartItemByProductId(productId);
 
         if(cartItem == null)
         {

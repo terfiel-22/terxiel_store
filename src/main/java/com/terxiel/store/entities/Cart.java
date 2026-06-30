@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,5 +32,32 @@ public class Cart {
         return cartItems.stream()
                 .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
+    }
+
+    public CartItem getCartItemByProductId(Long productId)
+    {
+        return cartItems.stream()
+                .filter(
+                        item-> Objects.equals(item.getProduct().getId(), productId)
+                ).findFirst()
+                .orElse(null);
+    }
+
+    public CartItem addCartItem(Product product)
+    {
+        var cartItem = getCartItemByProductId(product.getId());
+
+        if(cartItem != null)
+        {
+            cartItem.setQuantity(cartItem.getQuantity() + 1);
+        } else {
+            cartItem = new CartItem();
+            cartItem.setProduct(product);
+            cartItem.setQuantity(1);
+            cartItem.setCart(this);
+            getCartItems().add(cartItem);
+        }
+
+        return cartItem;
     }
 }
