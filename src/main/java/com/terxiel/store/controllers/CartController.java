@@ -144,7 +144,6 @@ class CartController {
         }
 
         cart.clear();
-
         cartRepository.save(cart);
 
         return ResponseEntity.noContent().build();
