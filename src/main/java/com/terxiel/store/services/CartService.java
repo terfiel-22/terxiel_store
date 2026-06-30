@@ -29,11 +29,7 @@ public class CartService {
 
     public CartItemDTO addToCart(UUID cartId, Long productId)
     {
-        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
-        if(cart == null)
-        {
-            throw new CartNotFoundException();
-        }
+        var cart = getCartEntity(cartId);
 
         var product = productRepository.findById(productId).orElse(null);
         if(product == null)
@@ -50,22 +46,14 @@ public class CartService {
 
     public CartDTO getCart(UUID cartId)
     {
-        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
-        if(cart == null)
-        {
-            throw  new CartNotFoundException();
-        }
+        var cart = getCartEntity(cartId);
 
         return cartMapper.toDto(cart);
     }
 
     public CartItemDTO updateCartItem(UUID cartId, Long productId, int quantity)
     {
-        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
-        if(cart == null)
-        {
-            throw new CartNotFoundException();
-        }
+        var cart = getCartEntity(cartId);
 
         var cartItem = cart.getCartItemByProductId(productId);
 
@@ -82,24 +70,26 @@ public class CartService {
 
     public void removeCartItem(UUID cartId, Long productId)
     {
-        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
-        if(cart == null)
-        {
-            throw new CartNotFoundException();
-        }
+        var cart = getCartEntity(cartId);
 
         cart.removeCartItem(productId);
         cartRepository.save(cart);
     }
 
     public void clearCart(UUID cartId) {
+        var cart = getCartEntity(cartId);
+
+        cart.clear();
+        cartRepository.save(cart);
+    }
+
+    private Cart getCartEntity(UUID cartId)
+    {
         var cart = cartRepository.getCartWithItems(cartId).orElse(null);
         if(cart == null)
         {
             throw new CartNotFoundException();
         }
-
-        cart.clear();
-        cartRepository.save(cart);
+        return cart;
     }
 }
