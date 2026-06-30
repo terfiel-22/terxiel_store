@@ -3,17 +3,20 @@ package com.terxiel.store.controllers;
 import com.terxiel.store.dtos.AddItemToCartRequest;
 import com.terxiel.store.dtos.CartDTO;
 import com.terxiel.store.dtos.CartItemDTO;
+import com.terxiel.store.dtos.UpdateCartItemRequest;
 import com.terxiel.store.entities.Cart;
 import com.terxiel.store.entities.CartItem;
 import com.terxiel.store.mappers.CartMapper;
 import com.terxiel.store.repositories.CartRepository;
 import com.terxiel.store.repositories.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -91,5 +94,39 @@ class CartController {
         var cartDto = cartMapper.toDto(cart);
 
         return ResponseEntity.ok().body(cartDto);
+    }
+
+    @PutMapping("/{cartId}/items/{productId}")
+    public ResponseEntity<?> updateCartItem(
+            @PathVariable UUID cartId,
+            @PathVariable Long productId,
+            @Valid @RequestBody UpdateCartItemRequest request
+            )
+    {
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
+        if(cart == null)
+        {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("error","Cart not found.")
+            );
+        }
+
+        var cartItem = cart.getCartItems().stream()
+                .filter(
+                        item-> Objects.equals(item.getProduct().getId(), productId)
+                ).findFirst()
+                .orElse(null);
+
+        if(cartItem == null)
+        {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("error","Product was not found in the cart.")
+            );
+        }
+
+        cartItem.setQuantity(request.quantity());
+        cartRepository.save(cart);
+
+        return ResponseEntity.ok(cartMapper.toDto(cartItem));
     }
 }
