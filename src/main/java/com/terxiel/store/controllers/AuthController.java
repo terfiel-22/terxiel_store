@@ -1,6 +1,8 @@
 package com.terxiel.store.controllers;
 
+import com.terxiel.store.dtos.JwtResponse;
 import com.terxiel.store.dtos.LoginRequest;
+import com.terxiel.store.services.JwtService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,10 @@ import java.util.Map;
 class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<JwtResponse> login(
             @Valid @RequestBody LoginRequest  request
     )
     {
@@ -31,7 +34,9 @@ class AuthController {
                 )
         );
 
-        return ResponseEntity.ok().build();
+        String token = jwtService.generateToken(request.email());
+
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
