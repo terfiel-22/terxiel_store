@@ -3,6 +3,7 @@ package com.terxiel.store.services;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -10,6 +11,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+    @Value("${spring.jwt.secret}")
+    public String secret;
 
     public String generateToken(String email)
     {
@@ -25,12 +28,9 @@ public class JwtService {
                 .compact();
     }
 
-    private SecretKey getSigningKey() {
-
-        // Must be a base64-encoded string that is at least 256 bits long
-        String SECRET_KEY = "YW55LXN1Y2gta2V5LXNob3VsZC1iZS12ZXJ5LWxvbmctYW5kLXNlY3VyZS0xMjM0NTY3ODk=";
-
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+    private SecretKey getSigningKey()
+    {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

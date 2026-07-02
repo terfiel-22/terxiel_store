@@ -9,3 +9,5 @@ spring:
     password: DmaFiel@7221997
   jpa:
     show-sql: true
+  jwt:
+    secret: ${JWT_SECRET}
