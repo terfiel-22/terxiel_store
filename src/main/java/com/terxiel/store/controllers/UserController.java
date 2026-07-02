@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,6 +27,7 @@ import java.util.Set;
 public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Operation(summary = "Endpoint for fetching users")
     @GetMapping
@@ -66,7 +68,7 @@ public class UserController {
         }
 
         var user = userMapper.toEntity(registerUserRequest);
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
         var userSummary = userMapper.toDto(user);
