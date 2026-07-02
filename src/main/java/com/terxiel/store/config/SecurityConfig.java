@@ -29,6 +29,7 @@ public class SecurityConfig {
                             .requestMatchers("/carts/**").permitAll()
                             // Allows post method on users endpoint to the public
                             .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                            .requestMatchers(HttpMethod.POST,"/auth/login").permitAll() // add this
                             // Other endpoints should be authenticated.
                             .anyRequest().authenticated()
             );
