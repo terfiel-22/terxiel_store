@@ -1,5 +1,6 @@
 package com.terxiel.store.services;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,6 +27,22 @@ public class JwtService {
                 .expiration(expirationDate)
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public boolean validateToken(String token)
+    {
+        try {
+            var claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+           return claims.getExpiration().after(new Date());
+        } catch (JwtException ex)
+        {
+            return false;
+        }
     }
 
     private SecretKey getSigningKey()
