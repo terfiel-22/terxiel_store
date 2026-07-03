@@ -1,5 +1,6 @@
 package com.terxiel.store.services;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -32,11 +33,7 @@ public class JwtService {
     public boolean validateToken(String token)
     {
         try {
-            var claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            var claims = getClaims(token);
 
            return claims.getExpiration().after(new Date());
         } catch (JwtException ex)
@@ -45,9 +42,23 @@ public class JwtService {
         }
     }
 
+    public String getEmailFromToken(String token)
+    {
+        return getClaims(token).getSubject();
+    }
+
     private SecretKey getSigningKey()
     {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Claims getClaims(String token)
+    {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
