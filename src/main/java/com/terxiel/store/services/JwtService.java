@@ -1,5 +1,6 @@
 package com.terxiel.store.services;
 
+import com.terxiel.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,14 +17,16 @@ public class JwtService {
     @Value("${spring.jwt.secret}")
     public String secret;
 
-    public String generateToken(String email)
+    public String generateToken(User user)
     {
         final long tokenExpiration = 86400; // 1-day
         final Date today = new Date(System.currentTimeMillis());
         final Date expirationDate = new Date(System.currentTimeMillis() + 1000 * tokenExpiration);
 
         return Jwts.builder()
-                .subject(email)
+                .subject(String.valueOf(user.getId()))
+                .claim("name",user.getName())
+                .claim("email",user.getEmail())
                 .issuedAt(today)
                 .expiration(expirationDate)
                 .signWith(getSigningKey())
@@ -42,9 +45,9 @@ public class JwtService {
         }
     }
 
-    public String getEmailFromToken(String token)
+    public Long getSubjectFromToken(String token)
     {
-        return getClaims(token).getSubject();
+        return Long.valueOf(getClaims(token).getSubject());
     }
 
     private SecretKey getSigningKey()

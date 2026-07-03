@@ -42,7 +42,9 @@ class AuthController {
                 )
         );
 
-        String token = jwtService.generateToken(request.email());
+        var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotFoundException::new);
+
+        String token = jwtService.generateToken(user);
 
         return ResponseEntity.ok(new JwtResponse(token));
     }
@@ -62,10 +64,12 @@ class AuthController {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null)
             throw new AuthenticationNotFoundException();
-        var email = (String) authentication.getPrincipal();
+        var userId = (Long) authentication.getPrincipal();
 
-        // 2. Lookup the user.
-        var user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        // 2. Look up the user.
+        if(userId == null)
+            throw new AuthenticationNotFoundException();
+        var user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         // 3. Return a response.
         return ResponseEntity.ok(userMapper.toDto(user));

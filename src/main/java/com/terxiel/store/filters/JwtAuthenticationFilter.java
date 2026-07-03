@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 1. Extract the 'Authorization' header from the incoming HTTP request
         var authHeader = request.getHeader("Authorization");
 
-        // 2. Validate header: If missing or does not start with "Bearer ", skip JWT processing
+        // 2. Validate header: If missing or does not start with 'Bearer ', skip JWT processing
         // and pass the request down the security filter chain (unauthenticated state)
         if(authHeader == null || !authHeader.startsWith("Bearer "))
         {
@@ -50,10 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 5. Create an authentication token object using the user's email extracted from the JWT.
+        // 5. Create an authentication token object using the user's id extracted from the JWT.
         // Note: Credentials are null (not needed after token check) and authorities are currently null.
         var authentication = new UsernamePasswordAuthenticationToken(
-                jwtService.getEmailFromToken(token),
+                jwtService.getSubjectFromToken(token),
                 null,
                 null
         );
