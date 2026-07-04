@@ -34,21 +34,22 @@ public class JwtService {
                 .subject(String.valueOf(user.getId()))
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())
+                .claim("role", user.getRole())
                 .issuedAt(today)
                 .expiration(expirationDate)
                 .signWith(jwtConfig.getSecretKey())
                 .compact();
     }
 
-    public boolean validateToken(String token)
+    public boolean notValidToken(String token)
     {
         try {
             var claims = getClaims(token);
 
-           return claims.getExpiration().after(new Date());
+           return !claims.getExpiration().after(new Date());
         } catch (JwtException ex)
         {
-            return false;
+            return true;
         }
     }
 

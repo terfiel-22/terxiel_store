@@ -4,6 +4,7 @@ import com.terxiel.store.dtos.ChangePasswordRequest;
 import com.terxiel.store.dtos.RegisterUserRequest;
 import com.terxiel.store.dtos.UpdateUserRequest;
 import com.terxiel.store.dtos.UserSummary;
+import com.terxiel.store.entities.Role;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +70,7 @@ public class UserController {
 
         var user = userMapper.toEntity(registerUserRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         var userSummary = userMapper.toDto(user);
