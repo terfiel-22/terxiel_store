@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @AllArgsConstructor
 @Component
@@ -51,11 +53,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // 5. Create an authentication token object using the user's id extracted from the JWT.
-        // Note: Credentials are null (not needed after token check) and authorities are currently null.
+        // Set the authority depending on the role of the user.
+        var userId = jwtService.getSubjectFromToken(token);
+        var role = jwtService.getRoleFromToken(token);
         var authentication = new UsernamePasswordAuthenticationToken(
-                jwtService.getSubjectFromToken(token),
+                userId,
                 null,
-                null
+                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
         );
 
         // 6. Build and attach request-specific details (like IP address, session ID) to the authentication object

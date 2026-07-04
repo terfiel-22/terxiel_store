@@ -1,5 +1,6 @@
 package com.terxiel.store.config;
 
+import com.terxiel.store.entities.Role;
 import com.terxiel.store.filters.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,8 @@ public class SecurityConfig {
                     a->a
                             // Allows carts endpoints to the public
                             .requestMatchers("/carts/**").permitAll()
+                            // Only allows requests from users with admin roles.
+                            .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
                             // Allows post method on users endpoint to the public
                             .requestMatchers(HttpMethod.POST,"/users").permitAll()
                             .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
@@ -50,13 +53,16 @@ public class SecurityConfig {
                 // Inject JWT Filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // If the client tries to access a protected endpoint, by default, Spring should return an Unauthorized error.
-                .exceptionHandling(
-                        ex->ex.authenticationEntryPoint(
-                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED
-                                )
-                        )
-                );
+                .exceptionHandling(ex->{
+                    // If the client tries to access a protected endpoint, by default, Spring should return an Unauthorized error.
+                    ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+
+                    // If the access to the endpoint is denied, returns a 403 Forbidden status.
+                    ex.accessDeniedHandler(
+                            ((request, response, accessDeniedException)
+                                    -> response.setStatus(HttpStatus.FORBIDDEN.value())
+                            ));
+                });
 
         return http.build();
     }

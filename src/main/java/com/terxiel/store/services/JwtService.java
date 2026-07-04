@@ -1,6 +1,7 @@
 package com.terxiel.store.services;
 
 import com.terxiel.store.config.JwtConfig;
+import com.terxiel.store.entities.Role;
 import com.terxiel.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -57,6 +58,8 @@ public class JwtService {
     {
         return Long.valueOf(getClaims(token).getSubject());
     }
+
+    public Role getRoleFromToken(String token) {return Role.valueOf(getClaims(token).get("role",String.class));}
 
     private Claims getClaims(String token)
     {
