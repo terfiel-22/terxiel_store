@@ -1,32 +1,29 @@
 package com.terxiel.store.services;
 
+import com.terxiel.store.config.JwtConfig;
 import com.terxiel.store.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.util.Date;
 
+@AllArgsConstructor
 @Service
 public class JwtService {
-    @Value("${spring.jwt.secret}")
-    public String secret;
+
+    private final JwtConfig jwtConfig;
 
     public String generateAccessToken(User user)
     {
-        final long tokenExpiration = 300; // 5m
-        return generateJwtToken(user, tokenExpiration);
+        return generateJwtToken(user, jwtConfig.getAccessTokenExpiration());
     }
 
     public String generateRefreshToken(User user)
     {
-        final long tokenExpiration = 604800; // 7d
-        return generateJwtToken(user, tokenExpiration);
+        return generateJwtToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
     private String generateJwtToken(User user, long tokenExpiration) {
@@ -39,7 +36,7 @@ public class JwtService {
                 .claim("email", user.getEmail())
                 .issuedAt(today)
                 .expiration(expirationDate)
-                .signWith(getSigningKey())
+                .signWith(jwtConfig.getSecretKey())
                 .compact();
     }
 
@@ -60,16 +57,10 @@ public class JwtService {
         return Long.valueOf(getClaims(token).getSubject());
     }
 
-    private SecretKey getSigningKey()
-    {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
     private Claims getClaims(String token)
     {
         return Jwts.parser()
-                .verifyWith(getSigningKey())
+                .verifyWith(jwtConfig.getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
