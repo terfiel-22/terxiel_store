@@ -8,6 +8,8 @@ import com.terxiel.store.exceptions.UserNotFoundException;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
 import com.terxiel.store.services.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,8 @@ class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
-            @Valid @RequestBody LoginRequest  request
+            @Valid @RequestBody LoginRequest  request,
+            HttpServletResponse httpServletResponse
     )
     {
         authenticationManager.authenticate(
@@ -44,9 +47,18 @@ class AuthController {
 
         var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotFoundException::new);
 
-        String token = jwtService.generateToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        // Issue refreshToken on cookie.
+        String refreshToken = jwtService.generateRefreshToken(user);
+        var cookie = new Cookie("refreshToken",refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(604800); // 7d
+        cookie.setSecure(true);
+        httpServletResponse.addCookie(cookie);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken));
     }
 
     @PostMapping("/validate")
