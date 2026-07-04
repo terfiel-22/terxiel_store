@@ -49,33 +49,31 @@ class AuthController {
 
         var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotFoundException::new);
 
-        String accessToken = jwtService.generateAccessToken(user);
-
         // Issue refreshToken on cookie.
-        String refreshToken = jwtService.generateRefreshToken(user);
-        var cookie = new Cookie("refreshToken",refreshToken);
+        var refreshToken = jwtService.generateRefreshToken(user);
+        var cookie = new Cookie("refreshToken", refreshToken.toString());
         cookie.setHttpOnly(true);
         cookie.setPath("/auth/refresh");
         cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration()); // 7d
         cookie.setSecure(true);
         httpServletResponse.addCookie(cookie);
 
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        var accessToken = jwtService.generateAccessToken(user);
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refresh(@CookieValue(value = "refreshToken") String refreshToken)
     {
-        if(jwtService.notValidToken(refreshToken))
+        var jwt = jwtService.parseToken(refreshToken);
+        if(jwt == null || jwt.isExpired())
         {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        var userId = jwtService.getSubjectFromToken(refreshToken);
-        var user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        var user = userRepository.findById(jwt.getUserId()).orElseThrow(UserNotFoundException::new);
         var accessToken = jwtService.generateAccessToken(user);
-
-        return ResponseEntity.ok(new JwtResponse(accessToken));
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
     @GetMapping("/me")

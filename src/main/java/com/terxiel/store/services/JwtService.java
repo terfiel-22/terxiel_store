@@ -1,10 +1,8 @@
 package com.terxiel.store.services;
 
 import com.terxiel.store.config.JwtConfig;
-import com.terxiel.store.entities.Role;
 import com.terxiel.store.entities.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,49 +15,42 @@ public class JwtService {
 
     private final JwtConfig jwtConfig;
 
-    public String generateAccessToken(User user)
+    public Jwt generateAccessToken(User user)
     {
         return generateJwtToken(user, jwtConfig.getAccessTokenExpiration());
     }
 
-    public String generateRefreshToken(User user)
+    public Jwt generateRefreshToken(User user)
     {
         return generateJwtToken(user, jwtConfig.getRefreshTokenExpiration());
     }
 
-    private String generateJwtToken(User user, long tokenExpiration) {
-        final Date today = new Date(System.currentTimeMillis());
-        final Date expirationDate = new Date(System.currentTimeMillis() + 1000 * tokenExpiration);
-
-        return Jwts.builder()
-                .subject(String.valueOf(user.getId()))
-                .claim("name", user.getName())
-                .claim("email", user.getEmail())
-                .claim("role", user.getRole())
-                .issuedAt(today)
-                .expiration(expirationDate)
-                .signWith(jwtConfig.getSecretKey())
-                .compact();
-    }
-
-    public boolean notValidToken(String token)
+    public Jwt parseToken(String token)
     {
         try {
             var claims = getClaims(token);
-
-           return !claims.getExpiration().after(new Date());
-        } catch (JwtException ex)
-        {
-            return true;
+            return new Jwt(claims,jwtConfig.getSecretKey());
+        } catch (Exception e) {
+            return null;
         }
+
     }
 
-    public Long getSubjectFromToken(String token)
-    {
-        return Long.valueOf(getClaims(token).getSubject());
-    }
+    private Jwt generateJwtToken(User user, long tokenExpiration) {
+        final Date today = new Date(System.currentTimeMillis());
+        final Date expirationDate = new Date(System.currentTimeMillis() + 1000 * tokenExpiration);
 
-    public Role getRoleFromToken(String token) {return Role.valueOf(getClaims(token).get("role",String.class));}
+        var claims = Jwts.claims()
+                .subject(String.valueOf(user.getId()))
+                .add("name", user.getName())
+                .add("email", user.getEmail())
+                .add("role", user.getRole())
+                .issuedAt(today)
+                .expiration(expirationDate)
+                .build();
+
+        return new Jwt(claims, jwtConfig.getSecretKey());
+    }
 
     private Claims getClaims(String token)
     {

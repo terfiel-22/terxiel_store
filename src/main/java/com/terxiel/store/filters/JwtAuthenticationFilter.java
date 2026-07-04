@@ -46,7 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 4. Validate token structure/signature. If invalid, stop processing and
         // let the request continue through the chain (Spring Security will block it later if protected)
-        if(jwtService.notValidToken(token))
+        var jwt = jwtService.parseToken(token);
+        if(jwt == null || jwt.isExpired())
         {
             filterChain.doFilter(request, response);
             return;
@@ -54,12 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 5. Create an authentication token object using the user's id extracted from the JWT.
         // Set the authority depending on the role of the user.
-        var userId = jwtService.getSubjectFromToken(token);
-        var role = jwtService.getRoleFromToken(token);
         var authentication = new UsernamePasswordAuthenticationToken(
-                userId,
+                jwt.getUserId(),
                 null,
-                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                List.of(new SimpleGrantedAuthority("ROLE_" + jwt.getRole().name()))
         );
 
         // 6. Build and attach request-specific details (like IP address, session ID) to the authentication object
