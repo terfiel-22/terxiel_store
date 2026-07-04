@@ -2,6 +2,7 @@ package com.terxiel.store.config;
 
 import com.terxiel.store.entities.Role;
 import com.terxiel.store.filters.JwtAuthenticationFilter;
+import com.terxiel.store.handlers.JwtLogoutHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtLogoutHandler jwtLogoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -50,6 +52,19 @@ public class SecurityConfig {
                             // Other endpoints should be authenticated.
                             .anyRequest().authenticated()
             )
+
+                // The Modern Approach (Stateless JWT Blacklisting)
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")                // POST request triggers server logout
+                        .invalidateHttpSession(true)             // Server-side: Destroys HTTP session
+                        .clearAuthentication(true)               // Server-side: Clears SecurityContext
+                        .deleteCookies("refreshToken") // Client-side: Orders browser to delete cookies
+                        .addLogoutHandler(jwtLogoutHandler)
+                        .logoutSuccessHandler((req,res,auth)->{
+                            res.setStatus(HttpStatus.OK.value());
+                        })
+                )
+
                 // Inject JWT Filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
