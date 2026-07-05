@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 4. Validate token structure/signature. If invalid, stop processing and
         // let the request continue through the chain (Spring Security will block it later if protected)
         var jwt = jwtService.parseToken(token);
-        if(jwt == null || jwt.isExpired())
+        if(jwt == null || jwt.isExpired() || jwtService.isTokenBlacklisted(token))
         {
             filterChain.doFilter(request, response);
             return;

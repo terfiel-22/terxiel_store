@@ -2,6 +2,7 @@ package com.terxiel.store.services;
 
 import com.terxiel.store.config.JwtConfig;
 import com.terxiel.store.entities.User;
+import com.terxiel.store.repositories.BlacklistedTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Date;
 public class JwtService {
 
     private final JwtConfig jwtConfig;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     public Jwt generateAccessToken(User user)
     {
@@ -33,7 +35,12 @@ public class JwtService {
         } catch (Exception e) {
             return null;
         }
+    }
 
+    public boolean isTokenBlacklisted(String token)
+    {
+        var existedBlacklistToken = blacklistedTokenRepository.findByToken(token).orElse(null);
+        return existedBlacklistToken != null;
     }
 
     private Jwt generateJwtToken(User user, long tokenExpiration) {

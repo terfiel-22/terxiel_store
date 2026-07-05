@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +22,15 @@ public class JwtLogoutHandler implements LogoutHandler {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             var token = authHeader.replace("Bearer ","");
-            var blacklist =  BlacklistedToken.builder().token(token).build();
-            blacklistedTokenRepository.save(blacklist);
+
+            var existedBlacklistToken = blacklistedTokenRepository.findByToken(token).orElse(null);
+            if(existedBlacklistToken == null)
+            {
+                var blacklist =  BlacklistedToken.builder().token(token).build();
+                blacklistedTokenRepository.save(blacklist);
+            }
+
+            SecurityContextHolder.clearContext();
         }
     }
 }
