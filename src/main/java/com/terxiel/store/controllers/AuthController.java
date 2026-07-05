@@ -4,10 +4,10 @@ import com.terxiel.store.config.JwtConfig;
 import com.terxiel.store.dtos.JwtResponse;
 import com.terxiel.store.dtos.LoginRequest;
 import com.terxiel.store.dtos.UserSummary;
-import com.terxiel.store.exceptions.AuthenticationNotFoundException;
 import com.terxiel.store.exceptions.UserNotFoundException;
 import com.terxiel.store.mappers.UserMapper;
 import com.terxiel.store.repositories.UserRepository;
+import com.terxiel.store.services.AuthService;
 import com.terxiel.store.services.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -33,6 +32,7 @@ class AuthController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final JwtConfig jwtConfig;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
@@ -79,19 +79,7 @@ class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserSummary> me()
     {
-        // 1. Extract the current principal.
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null)
-            throw new AuthenticationNotFoundException();
-        var userId = (Long) authentication.getPrincipal();
-
-        // 2. Look up the user.
-        if(userId == null)
-            throw new AuthenticationNotFoundException();
-        var user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-
-        // 3. Return a response.
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return ResponseEntity.ok(userMapper.toDto(authService.getCurrentUser()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -99,14 +87,6 @@ class AuthController {
     {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 Map.of("error","Please provide a valid credential.")
-        );
-    }
-
-    @ExceptionHandler(AuthenticationNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleAuthenticationNotFound()
-    {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                Map.of("error","You are not currently signed in.")
         );
     }
 }
