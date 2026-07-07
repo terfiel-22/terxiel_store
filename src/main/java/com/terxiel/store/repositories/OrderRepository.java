@@ -9,11 +9,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @EntityGraph(attributePaths = "orderItems.product")
     @Query("SELECT o FROM Order o WHERE o.customer = :customer")
-    List<Order> getAllByCustomer(@Param("customer") User customer);
+    List<Order> getOrdersByCustomer(@Param("customer") User customer);
+
+    @EntityGraph(attributePaths = "orderItems.product")
+    @Query("SELECT o FROM Order o WHERE o.id = :id")
+    Optional<Order> getOrderWithItems(@Param("id") Long id);
 }
