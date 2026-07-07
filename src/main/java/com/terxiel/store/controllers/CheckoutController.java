@@ -3,8 +3,6 @@ package com.terxiel.store.controllers;
 import com.terxiel.store.dtos.CheckoutDto;
 import com.terxiel.store.dtos.ErrorDTO;
 import com.terxiel.store.entities.Order;
-import com.terxiel.store.entities.OrderItem;
-import com.terxiel.store.entities.OrderStatus;
 import com.terxiel.store.exceptions.CartIsEmptyException;
 import com.terxiel.store.exceptions.CartNotFoundException;
 import com.terxiel.store.repositories.CartRepository;
@@ -42,25 +40,8 @@ public class CheckoutController {
         // Get current user
         var user = authService.getCurrentUser();
 
-
-        var order = Order.builder()
-                .totalPrice(cart.getTotalPrice())
-                .status(OrderStatus.PENDING)
-                .customer(user)
-                .build();
-
-        // Set order items
-        cart.getCartItems().forEach(cartItem -> {
-            var orderItem = OrderItem.builder()
-                    .order(order)
-                    .product(cartItem.getProduct())
-                    .quantity(cartItem.getQuantity())
-                    .unitPrice(cartItem.getProduct().getPrice())
-                    .totalPrice(cartItem.getTotalPrice())
-                    .build();
-
-            order.getOrderItems().add(orderItem);
-        });
+        // Initialize order
+        var order = Order.fromCart(cart,user);
 
         orderRepository.save(order);
 
