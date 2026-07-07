@@ -1,6 +1,7 @@
 package com.terxiel.store.controllers;
 
 import com.terxiel.store.config.JwtConfig;
+import com.terxiel.store.dtos.ErrorDTO;
 import com.terxiel.store.dtos.JwtResponse;
 import com.terxiel.store.dtos.LoginRequest;
 import com.terxiel.store.dtos.UserSummary;
@@ -19,8 +20,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -83,10 +82,10 @@ class AuthController {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String,String>> handleInvalidCredential()
+    public ResponseEntity<ErrorDTO> handleInvalidCredential()
     {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                Map.of("error","Please provide a valid credential.")
+                new ErrorDTO("Please provide a valid credential.")
         );
     }
 }

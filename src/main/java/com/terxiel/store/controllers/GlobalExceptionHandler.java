@@ -1,9 +1,11 @@
 package com.terxiel.store.controllers;
 
+import com.terxiel.store.dtos.ErrorDTO;
 import com.terxiel.store.exceptions.AuthenticationNotFoundException;
 import com.terxiel.store.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,18 +25,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleUserNotFound()
+    public ResponseEntity<ErrorDTO> handleUserNotFound()
     {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error","User not found.")
+                new ErrorDTO("User not found.")
         );
     }
 
     @ExceptionHandler(AuthenticationNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleAuthenticationNotFound()
+    public ResponseEntity<ErrorDTO> handleAuthenticationNotFound()
     {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                Map.of("error","You are not currently signed in.")
+                new ErrorDTO("You are not currently signed in.")
         );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDTO> handleUnreadableMessage()
+    {
+        return ResponseEntity.badRequest().body(new ErrorDTO("Invalid request body"));
     }
 }

@@ -1,6 +1,7 @@
 package com.terxiel.store.controllers;
 
 import com.terxiel.store.dtos.CheckoutDto;
+import com.terxiel.store.dtos.ErrorDTO;
 import com.terxiel.store.entities.Order;
 import com.terxiel.store.entities.OrderItem;
 import com.terxiel.store.entities.OrderStatus;
@@ -15,8 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -71,18 +70,18 @@ public class CheckoutController {
     }
 
     @ExceptionHandler(CartNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleCartNotFound()
+    public ResponseEntity<ErrorDTO> handleCartNotFound()
     {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(
-                Map.of("error","Cart not found.")
+                new ErrorDTO("Cart not found.")
         );
     }
 
     @ExceptionHandler(CartIsEmptyException.class)
-    public ResponseEntity<Map<String,String>> handleCartIsEmpty()
+    public ResponseEntity<ErrorDTO> handleCartIsEmpty()
     {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(
-                Map.of("error","Cart is empty.")
+                new ErrorDTO("Cart is empty.")
         );
     }
 }

@@ -1,9 +1,6 @@
 package com.terxiel.store.controllers;
 
-import com.terxiel.store.dtos.AddItemToCartRequest;
-import com.terxiel.store.dtos.CartDTO;
-import com.terxiel.store.dtos.CartItemDTO;
-import com.terxiel.store.dtos.UpdateCartItemRequest;
+import com.terxiel.store.dtos.*;
 import com.terxiel.store.exceptions.CartNotFoundException;
 import com.terxiel.store.exceptions.ProductNotFoundException;
 import com.terxiel.store.services.CartService;
@@ -14,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -79,18 +75,18 @@ class CartController {
     }
 
     @ExceptionHandler(CartNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleCartNotFoundException()
+    public ResponseEntity<ErrorDTO> handleCartNotFoundException()
     {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                Map.of("error","Cart not found.")
+                new ErrorDTO("Cart not found.")
         );
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleProductNotFoundException()
+    public ResponseEntity<ErrorDTO> handleProductNotFoundException()
     {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(
-                Map.of("error","Product not found in the cart.")
+               new ErrorDTO("Product not found in the cart.")
         );
     }
 }
