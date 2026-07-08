@@ -1,0 +1,44 @@
+name: Java CI with MySQL
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Spin up the MySQL container as a background service
+    services:
+      mysql-db:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: store
+          MYSQL_ROOT_PASSWORD: password!
+        ports:
+          - 3306:3306
+        # Wait until MySQL is fully initialized before starting the job steps
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and Run Tests
+        run: mvn clean verify
+        env:
+          # Map application properties to the GitHub runner environment
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3306
+          MYSQL_DATABASE: store
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password!
