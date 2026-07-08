@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Service
 public class OrderService {
-    private AuthService authService;
+    private final AuthService authService;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
