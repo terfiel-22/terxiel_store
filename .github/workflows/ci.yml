@@ -1,4 +1,4 @@
-name: Java CI with MySQL
+name: Set up JDK 25 with MySQL
 
 on:
   push:
@@ -26,10 +26,10 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
 
