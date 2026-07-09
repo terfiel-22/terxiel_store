@@ -12,6 +12,7 @@ public interface CheckoutDto
         ){}
 
         record Response(
-                Long orderId
+                Long orderId,
+                String checkoutUrl
         ){}
 }

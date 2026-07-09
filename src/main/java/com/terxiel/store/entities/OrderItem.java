@@ -41,4 +41,9 @@ public class OrderItem {
         this.unitPrice = product.getPrice();
         this.totalPrice = unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
+
+    public BigDecimal getUnitAmountDecimal()
+    {
+        return unitPrice.multiply(BigDecimal.valueOf(100));
+    }
 }
