@@ -1,5 +1,6 @@
 package com.terxiel.store.controllers;
 
+import com.stripe.exception.StripeException;
 import com.terxiel.store.dtos.CheckoutDto;
 import com.terxiel.store.dtos.ErrorDTO;
 import com.terxiel.store.exceptions.CartIsEmptyException;
@@ -19,11 +20,16 @@ public class CheckoutController {
     private final CheckoutService checkoutService;
 
     @PostMapping
-    public CheckoutDto.Response checkout(
+    public ResponseEntity<?> checkout(
             @Valid @RequestBody CheckoutDto.Request request
     )
     {
-        return checkoutService.checkout(request);
+        try {
+            return ResponseEntity.ok(checkoutService.checkout(request));
+        } catch (StripeException e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorDTO("Error creating checkout session."));
+        }
     }
 
     @ExceptionHandler(CartNotFoundException.class)

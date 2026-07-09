@@ -1,5 +1,6 @@
 package com.terxiel.store.services;
 
+import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.terxiel.store.dtos.CheckoutDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +28,8 @@ public class CheckoutService {
     @Value("${websiteUrl}")
     private String websiteUrl;
 
-    public CheckoutDto.Response checkout(CheckoutDto.Request request) {
+    @Transactional
+    public CheckoutDto.Response checkout(CheckoutDto.Request request) throws StripeException {
         // Get cart from request
         var cart = cartRepository.getCartWithItems(request.cartId()).orElseThrow(CartNotFoundException::new);
         if(cart.isEmpty())
@@ -43,38 +46,38 @@ public class CheckoutService {
         orderRepository.save(order);
 
         // Create a checkout session
-        var builder = SessionCreateParams.builder()
-                            .setMode(SessionCreateParams.Mode.PAYMENT)
-                            .setSuccessUrl(websiteUrl+"/checkout-success?orderId="+order.getId())
-                            .setCancelUrl(websiteUrl+"/checkout-cancel");
-
-        order.getOrderItems().forEach(item->{
-            var lineItem = SessionCreateParams.LineItem.builder()
-                    .setQuantity(Long.valueOf(item.getQuantity()))
-                    .setPriceData(
-                            SessionCreateParams.LineItem.PriceData.builder()
-                                    .setCurrency("PHP")
-                                    .setUnitAmountDecimal(item.getUnitAmountDecimal())
-                                    .setProductData(
-                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                    .setName(item.getProduct().getName())
-                                                    .build()
-                                    )
-                                    .build()
-                    ).build();
-
-            builder.addLineItem(lineItem);
-        });
-
         try {
+            var builder = SessionCreateParams.builder()
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .setSuccessUrl(websiteUrl+"/checkout-success?orderId="+order.getId())
+                    .setCancelUrl(websiteUrl+"/checkout-cancel");
+
+            order.getOrderItems().forEach(item->{
+                var lineItem = SessionCreateParams.LineItem.builder()
+                        .setQuantity(Long.valueOf(item.getQuantity()))
+                        .setPriceData(
+                                SessionCreateParams.LineItem.PriceData.builder()
+                                        .setCurrency("PHP")
+                                        .setUnitAmountDecimal(item.getUnitAmountDecimal())
+                                        .setProductData(
+                                                SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                        .setName(item.getProduct().getName())
+                                                        .build()
+                                        )
+                                        .build()
+                        ).build();
+
+                builder.addLineItem(lineItem);
+            });
+
             var session = Session.create(builder.build());
 
             cartService.clearCart(request.cartId());
 
             return new CheckoutDto.Response(order.getId(), session.getUrl());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new CheckoutDto.Response(order.getId(), null);
+        } catch (StripeException ex) {
+            orderRepository.delete(order);
+            throw ex;
         }
     }
 }
