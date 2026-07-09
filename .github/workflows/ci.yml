@@ -34,7 +34,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and Run Tests
-        run: mvn clean verify
+        run: mvn clean test verify
         env:
           # Map application properties to the GitHub runner environment
           MYSQL_HOST: localhost
