@@ -1,12 +1,15 @@
 package com.terxiel.store.controllers;
 
 import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.PaymentIntent;
 import com.stripe.net.Webhook;
 import com.terxiel.store.dtos.CheckoutDto;
 import com.terxiel.store.dtos.ErrorDTO;
+import com.terxiel.store.entities.OrderStatus;
 import com.terxiel.store.exceptions.CartIsEmptyException;
 import com.terxiel.store.exceptions.CartNotFoundException;
 import com.terxiel.store.exceptions.PaymentException;
+import com.terxiel.store.repositories.OrderRepository;
 import com.terxiel.store.services.CheckoutService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class CheckoutController {
 
     @Value("${stripe.webhookSecretKey}")
     private String webhookSecretKey;
+    private final OrderRepository orderRepository;
 
     @PostMapping
     public CheckoutDto.Response checkout(
@@ -42,11 +46,18 @@ public class CheckoutController {
         try {
             var event = Webhook.constructEvent(payload,signature,webhookSecretKey);
             var stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
-
+            System.out.println(event.getType());
             switch (event.getType())
             {
                 case "payment_intent.succeeded" -> {
-                    // Update order status (PAID)
+                    var paymentIntent = (PaymentIntent) stripeObject;
+                    if(paymentIntent != null)
+                    {
+                        var orderId = paymentIntent.getMetadata().get("order_id");
+                        var order = orderRepository.findById(Long.valueOf(orderId)).orElseThrow();
+                        order.setStatus(OrderStatus.PAID);
+                        orderRepository.save(order);
+                    }
                 }
                 case "payment_intent.failed" -> {
                     // Update order status (FAILED)
