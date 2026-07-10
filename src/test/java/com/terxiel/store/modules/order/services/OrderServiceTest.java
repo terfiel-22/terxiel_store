@@ -1,15 +1,14 @@
-package com.terxiel.store.services;
+package com.terxiel.store.modules.order.services;
 
-import com.terxiel.store.modules.order.dtos.OrderDTO;
 import com.terxiel.store.entities.Order;
 import com.terxiel.store.entities.OrderStatus;
 import com.terxiel.store.entities.User;
-import com.terxiel.store.modules.auth.exceptions.AuthenticationNotFoundException;
-import com.terxiel.store.modules.order.exceptions.OrderNotFoundException;
-import com.terxiel.store.modules.order.services.OrderService;
-import com.terxiel.store.modules.user.exceptions.UserNotFoundException;
 import com.terxiel.store.mappers.OrderMapper;
+import com.terxiel.store.modules.auth.exceptions.AuthenticationNotFoundException;
 import com.terxiel.store.modules.auth.services.AuthService;
+import com.terxiel.store.modules.order.dtos.OrderDTO;
+import com.terxiel.store.modules.order.exceptions.OrderNotFoundException;
+import com.terxiel.store.modules.user.exceptions.UserNotFoundException;
 import com.terxiel.store.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +27,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OrderService Unit Tests")
@@ -48,15 +49,12 @@ class OrderServiceTest {
     private OrderDTO.Order dummyOrderDto;
 
     @BeforeEach
-    void setUp()
-    {
-        // Create dummy User
+    void setUp() {
+        // Create dummy users
         dummyUser1 = User.builder()
                 .id(1L)
                 .name("Test User 1")
                 .build();
-
-
         dummyUser2 = User.builder()
                 .id(2L)
                 .name("Test User 2")
@@ -84,6 +82,43 @@ class OrderServiceTest {
                 List.of(dummyOrderItemDto),
                 dummyOrder.getTotalPrice()
         );
+    }
+
+
+    @Test
+    @DisplayName("Should throw an AuthenticationNotFoundException error.")
+    void shouldThrowAuthenticationNotFoundException()
+    {
+        // Arrange
+        when(authService.getCurrentUser()).thenThrow(AuthenticationNotFoundException.class);
+
+        // Act & Assert
+        assertThrows(
+                AuthenticationNotFoundException.class,
+                () -> authService.getCurrentUser()
+        );
+
+        // Verify code stopped early and didn't getOrdersByCustomer or mapping
+        verifyNoInteractions(orderRepository);
+        verifyNoInteractions(orderMapper);
+    }
+
+    @Test
+    @DisplayName("Should throw an UserNotFoundException error.")
+    void shouldThrowUserNotFoundException()
+    {
+        // Arrange
+        when(authService.getCurrentUser()).thenThrow(UserNotFoundException.class);
+
+        // Act & Assert
+        assertThrows(
+                UserNotFoundException.class,
+                () -> authService.getCurrentUser()
+        );
+
+        // Verify code stopped early and didn't getOrdersByCustomer or mapping
+        verifyNoInteractions(orderRepository);
+        verifyNoInteractions(orderMapper);
     }
 
     @Nested
@@ -128,42 +163,6 @@ class OrderServiceTest {
             // Verify interactions
             verify(authService, times(1)).getCurrentUser();
             verify(orderRepository, times(1)).getOrdersByCustomer(dummyUser2);
-            verifyNoInteractions(orderMapper);
-        }
-
-        @Test
-        @DisplayName("Should throw an AuthenticationNotFoundException error.")
-        void getOrders_ShouldThrowAuthenticationNotFoundException()
-        {
-            // Arrange
-            when(authService.getCurrentUser()).thenThrow(AuthenticationNotFoundException.class);
-
-            // Act & Assert
-            assertThrows(
-                    AuthenticationNotFoundException.class,
-                    () -> authService.getCurrentUser()
-            );
-
-            // Verify code stopped early and didn't getOrdersByCustomer or mapping
-            verifyNoInteractions(orderRepository);
-            verifyNoInteractions(orderMapper);
-        }
-
-        @Test
-        @DisplayName("Should throw an UserNotFoundException error.")
-        void getOrders_ShouldThrowUserNotFoundException()
-        {
-            // Arrange
-            when(authService.getCurrentUser()).thenThrow(UserNotFoundException.class);
-
-            // Act & Assert
-            assertThrows(
-                    UserNotFoundException.class,
-                    () -> authService.getCurrentUser()
-            );
-
-            // Verify code stopped early and didn't getOrdersByCustomer or mapping
-            verifyNoInteractions(orderRepository);
             verifyNoInteractions(orderMapper);
         }
     }
