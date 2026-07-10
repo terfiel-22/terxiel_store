@@ -32,11 +32,11 @@ public class CheckoutController {
 
     @PostMapping("/webhook")
     public void webhook(
-        @RequestHeader Map<String, String> signature,
+        @RequestHeader Map<String, String> headers,
         @RequestBody String payload
     )
     {
-        checkoutService.handleWebhookEvent(new WebhookRequest(signature,payload));
+        checkoutService.handleWebhookEvent(new WebhookRequest(headers,payload));
     }
 
     @ExceptionHandler(CartNotFoundException.class)
