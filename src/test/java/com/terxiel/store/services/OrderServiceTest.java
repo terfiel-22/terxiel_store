@@ -1,13 +1,15 @@
 package com.terxiel.store.services;
 
-import com.terxiel.store.dtos.OrderDTO;
+import com.terxiel.store.modules.order.dtos.OrderDTO;
 import com.terxiel.store.entities.Order;
 import com.terxiel.store.entities.OrderStatus;
 import com.terxiel.store.entities.User;
-import com.terxiel.store.exceptions.AuthenticationNotFoundException;
-import com.terxiel.store.exceptions.OrderNotFoundException;
-import com.terxiel.store.exceptions.UserNotFoundException;
+import com.terxiel.store.modules.auth.exceptions.AuthenticationNotFoundException;
+import com.terxiel.store.modules.order.exceptions.OrderNotFoundException;
+import com.terxiel.store.modules.order.services.OrderService;
+import com.terxiel.store.modules.user.exceptions.UserNotFoundException;
 import com.terxiel.store.mappers.OrderMapper;
+import com.terxiel.store.modules.auth.services.AuthService;
 import com.terxiel.store.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

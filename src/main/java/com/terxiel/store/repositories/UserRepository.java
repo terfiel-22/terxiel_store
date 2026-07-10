@@ -1,6 +1,6 @@
 package com.terxiel.store.repositories;
 
-import com.terxiel.store.dtos.UserSummary;
+import com.terxiel.store.modules.user.dtos.UserSummary;
 import com.terxiel.store.entities.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;

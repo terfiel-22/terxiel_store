@@ -1,7 +1,6 @@
 package com.terxiel.store.repositories;
 
-import com.terxiel.store.dtos.ProductSummary;
-import com.terxiel.store.dtos.ProductSummaryRecord;
+import com.terxiel.store.modules.product.dtos.ProductSummaryRecord;
 import com.terxiel.store.entities.Category;
 import com.terxiel.store.entities.Product;
 import org.springframework.data.jpa.repository.*;
@@ -58,12 +57,11 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @Query("UPDATE Product p SET p.price=:new_price WHERE p.category.id = :category_id")
     void updatePriceByCategory(@Param("new_price") BigDecimal newPrice, @Param("category_id") Byte categoryId);
 
-    @Query("select new com.terxiel.store.dtos.ProductSummaryRecord(p.id,p.name) from Product p where p.category = :category")
+    @Query("select new com.terxiel.store.modules.product.dtos.ProductSummaryRecord(p.id,p.name) from Product p where p.category = :category")
     List<ProductSummaryRecord> findByCategory(@Param("category") Category category);
 
     @Procedure("findProductsByPriceRange")
     List<Product> findProductsByPrice(BigDecimal min, BigDecimal max);
-
 
     @EntityGraph(attributePaths = "category")
     @Query("SELECT p FROM Product p")

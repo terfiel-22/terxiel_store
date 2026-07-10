@@ -1,6 +1,6 @@
 package com.terxiel.store.mappers;
 
-import com.terxiel.store.dtos.OrderDTO;
+import com.terxiel.store.modules.order.dtos.OrderDTO;
 import com.terxiel.store.entities.Order;
 import org.mapstruct.*;
 

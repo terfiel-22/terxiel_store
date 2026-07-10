@@ -1,8 +1,8 @@
 package com.terxiel.store.mappers;
 
-import com.terxiel.store.dtos.RegisterUserRequest;
-import com.terxiel.store.dtos.UpdateUserRequest;
-import com.terxiel.store.dtos.UserSummary;
+import com.terxiel.store.modules.user.dtos.RegisterUserRequest;
+import com.terxiel.store.modules.user.dtos.UpdateUserRequest;
+import com.terxiel.store.modules.user.dtos.UserSummary;
 import com.terxiel.store.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

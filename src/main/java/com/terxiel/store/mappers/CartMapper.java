@@ -1,7 +1,7 @@
 package com.terxiel.store.mappers;
 
-import com.terxiel.store.dtos.CartDTO;
-import com.terxiel.store.dtos.CartItemDTO;
+import com.terxiel.store.modules.cart.dtos.CartDTO;
+import com.terxiel.store.modules.cart.dtos.CartItemDTO;
 import com.terxiel.store.entities.Cart;
 import com.terxiel.store.entities.CartItem;
 import org.mapstruct.*;

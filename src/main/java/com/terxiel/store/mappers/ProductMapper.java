@@ -1,7 +1,7 @@
 package com.terxiel.store.mappers;
 
-import com.terxiel.store.dtos.ProductSummary;
-import com.terxiel.store.dtos.UpdateProductRequest;
+import com.terxiel.store.modules.product.dtos.ProductSummary;
+import com.terxiel.store.modules.product.dtos.UpdateProductRequest;
 import com.terxiel.store.entities.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

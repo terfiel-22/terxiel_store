@@ -1,8 +1,8 @@
 package com.terxiel.store.controllers;
 
-import com.terxiel.store.dtos.ErrorDTO;
-import com.terxiel.store.exceptions.AuthenticationNotFoundException;
-import com.terxiel.store.exceptions.UserNotFoundException;
+import com.terxiel.store.shared.dtos.ErrorDTO;
+import com.terxiel.store.modules.auth.exceptions.AuthenticationNotFoundException;
+import com.terxiel.store.modules.user.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

@@ -2,7 +2,7 @@ package com.terxiel.store.config;
 
 import com.terxiel.store.entities.Role;
 import com.terxiel.store.filters.JwtAuthenticationFilter;
-import com.terxiel.store.handlers.JwtLogoutHandler;
+import com.terxiel.store.modules.auth.handlers.JwtLogoutHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

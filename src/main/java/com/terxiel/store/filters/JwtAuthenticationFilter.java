@@ -1,6 +1,6 @@
 package com.terxiel.store.filters;
 
-import com.terxiel.store.services.JwtService;
+import com.terxiel.store.modules.auth.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
