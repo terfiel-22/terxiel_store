@@ -47,10 +47,19 @@ public class CheckoutService {
 
             cartService.clearCart(request.cartId());
 
-            return new CheckoutDto.Response(order.getId(), session.getCheckoutUrl());
+            return new CheckoutDto.Response(order.getId(), session.checkoutUrl());
         } catch (PaymentException ex) {
             orderRepository.delete(order);
             throw ex;
         }
+    }
+
+    public void handleWebhookEvent(WebhookRequest request)
+    {
+        paymentGateway.parseWebhookRequest(request).ifPresent(result->{
+            var order = orderRepository.findById(result.orderId()).orElseThrow();
+            order.setStatus(result.paymentStatus());
+            orderRepository.save(order);
+        });
     }
 }
