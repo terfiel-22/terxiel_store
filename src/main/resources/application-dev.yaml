@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/store?createDatabaseIfNotExist=true
-    username: root
-    password: password!
+    url: jdbc:mysql://${DB_HOST:localhost:3306}/${DB_SCHEMA:store}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password!}
   jpa:
     show-sql: true
 
