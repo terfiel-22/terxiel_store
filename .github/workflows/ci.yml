@@ -44,6 +44,9 @@ jobs:
           MYSQL_DATABASE: store
           MYSQL_USER: root
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          JWT_SECRET: mock
+          STRIPE_SECRET_KEY: sk_test_mock
+          STRIPE_WEBHOOK_SECRET_KEY: whsec_mock
 
       # Login to Docker
       - name: Log in to Docker Hub
