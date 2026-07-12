@@ -1,4 +1,4 @@
-package com.terxiel.store.controllers;
+package com.terxiel.store.shared.handler;
 
 import com.terxiel.store.shared.dtos.ErrorDTO;
 import com.terxiel.store.modules.auth.exceptions.AuthenticationNotFoundException;

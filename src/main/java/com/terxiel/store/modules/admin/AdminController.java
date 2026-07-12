@@ -1,4 +1,4 @@
-package com.terxiel.store.controllers;
+package com.terxiel.store.modules.admin;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
