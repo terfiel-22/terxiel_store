@@ -1,40 +1,58 @@
-name: Java CI with Docker
+name: Set up JDK 25 with MySQL
 
 on:
   push:
-    branches: [ "master","main" ]
+    branches: [ "main", "master", "develop" ]
   pull_request:
-    branches: [ "master","main" ]
+    branches: [ "main", "master" ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    # Spin up the MySQL container as a background service
+    services:
+      mysql-db:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: store
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        ports:
+          - 3306:3306
+        # Wait until MySQL is fully initialized before starting the job steps
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
-      # Step 1: Check out the repository code
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Java Development Kit (JDK)
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
-          cache: 'maven' # Automatically caches Maven dependencies
+          cache: 'maven'
 
-      # Step 3: Compile and run unit tests
-      - name: Run Tests
-        run: ./mvnw clean test
+      - name: Build and Run Tests
+        run: |
+          chmod +x mvnw
+          ./mvnw clean test
+        env:
+          # Map application properties to the GitHub runner environment
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3306
+          MYSQL_DATABASE: store
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
 
-      # Step 4: Log into Docker Hub (using encrypted secrets)
+      # Login to Docker
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Step 5: Build and push the Docker image
+      # Build and push the Docker image
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
