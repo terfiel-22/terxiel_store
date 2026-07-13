@@ -26,13 +26,16 @@ Before running the project locally, ensure you have the following installed:
 ## 🔧 Getting Started
 
    1. Clone the repository:
-   
+
+   ```
    git clone https://github.com/terfiel-22/terxiel_store.git
    cd terxiel_store
+   ```
    
    2. Configure environment variables:
    Create a .env file in the root directory and add your credentials:
-   
+
+   ```env
    JWT_SECRET=
    STRIPE_SECRET_KEY=
    STRIPE_WEBHOOK_SECRET_KEY=
@@ -41,10 +44,13 @@ Before running the project locally, ensure you have the following installed:
    DB_USER=
    DB_PASSWORD=
    DB_PORT=
+   ```
    
    3. Launch the application with Docker:
-   
+
+   ```
    docker-compose up --build
+   ```
    
    The API will be accessible at http://localhost:8080.
 
